@@ -1,3 +1,4 @@
+import os
 print("Current working directory:", os.getcwd())
 print("Files in current directory:", os.listdir())
 from flask import Flask, render_template, request, jsonify
@@ -6,7 +7,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from werkzeug.utils import secure_filename
 import numpy as np
-import os
+
 
 app = Flask(__name__)
 
