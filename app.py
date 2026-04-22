@@ -2,7 +2,7 @@ import os
 print("Current working directory:", os.getcwd())
 print("Files in current directory:", os.listdir())
 from flask import Flask, render_template, request, jsonify
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from werkzeug.utils import secure_filename
@@ -24,11 +24,7 @@ class_names = ["glioma", "meningioma", "notumor", "pituitary"]
 print("App started")
 print("About to load model...")
 
-model = load_model(
-    MODEL_PATH,
-    custom_objects={"preprocess_input": preprocess_input},
-    compile=False
-)
+model = load_model(MODEL_PATH, compile=False)
 
 print("Model loaded successfully")
 
