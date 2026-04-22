@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-MODEL_PATH = "best_resnet50_brain_tumor.keras"
+MODEL_PATH = "brain_tumor_resnet50_final.keras"
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
