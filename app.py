@@ -1,3 +1,5 @@
+print("Current working directory:", os.getcwd())
+print("Files in current directory:", os.listdir())
 from flask import Flask, render_template, request, jsonify
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -18,11 +20,16 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Use your real class order here
 class_names = ["glioma", "meningioma", "notumor", "pituitary"]
 
+print("App started")
+print("About to load model...")
+
 model = load_model(
     MODEL_PATH,
     custom_objects={"preprocess_input": preprocess_input},
     compile=False
 )
+
+print("Model loaded successfully")
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -70,3 +77,4 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
+
