@@ -1,801 +1,490 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeuroScan AI | Brain Tumor Detection</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #081421;
-      --bg-soft: #0f2033;
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.16);
-      --primary: #19c2ff;
-      --primary-dark: #0da8e1;
-      --secondary: #7b61ff;
-      --success: #16c47f;
-      --danger: #ff5d73;
-      --text: #eaf4ff;
-      --muted: #a8bfd6;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(25, 194, 255, 0.18), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(123, 97, 255, 0.20), transparent 24%),
-        linear-gradient(135deg, #07111c, #0d1d2d 45%, #091624 100%);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .background-grid {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.25));
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    header {
-      padding: 22px 0;
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(14px);
-      background: rgba(8, 20, 33, 0.55);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      z-index: 50;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      font-size: 1.1rem;
-    }
-
-    .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      box-shadow: 0 10px 25px rgba(25, 194, 255, 0.25);
-      font-size: 1.25rem;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 22px;
-      align-items: center;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.95rem;
-      transition: 0.25s ease;
-    }
-
-    nav a:hover {
-      color: var(--text);
-    }
-
-    .btn {
-      border: none;
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
-      padding: 13px 22px;
-      border-radius: 999px;
-      font-weight: 600;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      box-shadow: 0 14px 30px rgba(25, 194, 255, 0.25);
-    }
-
-    .btn-outline {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: var(--text);
-    }
-
-    .hero {
-      padding: 72px 0 34px;
-      display: grid;
-      grid-template-columns: 1.15fr 0.95fr;
-      gap: 34px;
-      align-items: center;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: rgba(25, 194, 255, 0.1);
-      border: 1px solid rgba(25, 194, 255, 0.22);
-      color: #cdefff;
-      font-size: 0.9rem;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 4.4rem);
-      line-height: 1.08;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(135deg, #ffffff, #8edfff 40%, #b59cff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 1.02rem;
-      max-width: 640px;
-      margin-bottom: 28px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-
-    .hero-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .stat {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 16px 18px;
-      border-radius: 18px;
-      min-width: 150px;
-      box-shadow: var(--shadow);
-    }
-
-    .stat h3 {
-      font-size: 1.4rem;
-      margin-bottom: 4px;
-    }
-
-    .stat p {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .hero-visual {
-      position: relative;
-    }
-
-    .visual-card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 28px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .scan-box {
-      position: relative;
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: linear-gradient(160deg, #0d1d2d, #13283d);
-      min-height: 460px;
-      display: grid;
-      place-items: center;
-    }
-
-    .scan-box img {
-      width: 100%;
-      height: 460px;
-      object-fit: cover;
-      opacity: 0.82;
-    }
-
-    .scan-overlay {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to bottom, rgba(6, 15, 24, 0.08), rgba(6, 15, 24, 0.2)),
-        repeating-linear-gradient(to bottom, transparent 0px, transparent 22px, rgba(255,255,255,0.03) 23px);
-    }
-
-    .scan-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--primary), transparent);
-      box-shadow: 0 0 24px rgba(25,194,255,0.85);
-      animation: scanMove 3.4s linear infinite;
-    }
-
-    @keyframes scanMove {
-      0% { top: 5%; }
-      50% { top: 88%; }
-      100% { top: 5%; }
-    }
-
-    section {
-      padding: 40px 0;
-    }
-
-    .section-head {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .section-head h2 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      margin-bottom: 10px;
-    }
-
-    .section-head p {
-      max-width: 760px;
-      margin: 0 auto;
-      color: var(--muted);
-      line-height: 1.8;
-    }
-
-    .upload-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      align-items: stretch;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
-
-    .upload-zone {
-      border: 2px dashed rgba(25,194,255,0.35);
-      border-radius: 22px;
-      padding: 34px 20px;
-      text-align: center;
-      background: rgba(255,255,255,0.03);
-      transition: 0.25s ease;
-    }
-
-    .upload-zone:hover {
-      border-color: rgba(25,194,255,0.7);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .upload-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 24px;
-      margin: 0 auto 16px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(25,194,255,0.18), rgba(123,97,255,0.18));
-      font-size: 1.8rem;
-    }
-
-    .upload-zone h3 {
-      margin-bottom: 10px;
-      font-size: 1.35rem;
-    }
-
-    .upload-zone p {
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 18px;
-    }
-
-    .hidden-input {
-      display: none;
-    }
-
-    .file-meta {
-      margin-top: 16px;
-      font-size: 0.95rem;
-      color: #c9dbec;
-      min-height: 24px;
-    }
-
-    .result-panel h3,
-    .upload-panel h3 {
-      font-size: 1.45rem;
-      margin-bottom: 12px;
-    }
-
-    .result-panel p,
-    .upload-panel p,
-    .footer-text {
-      color: var(--muted);
-      line-height: 1.75;
-    }
-
-    .preview-box {
-      margin-top: 18px;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      min-height: 250px;
-      display: grid;
-      place-items: center;
-      position: relative;
-    }
-
-    .preview-box img {
-      width: 100%;
-      max-height: 320px;
-      object-fit: cover;
-      display: none;
-    }
-
-    .preview-placeholder {
-      padding: 30px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    .result-card {
-      margin-top: 18px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .prediction {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 18px 20px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .prediction strong {
-      display: block;
-      font-size: 1.05rem;
-      margin-bottom: 4px;
-    }
-
-    .pill {
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 0.86rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .pill.safe {
-      color: #bbffe5;
-      background: rgba(22, 196, 127, 0.16);
-      border: 1px solid rgba(22, 196, 127, 0.28);
-    }
-
-    .pill.alert {
-      color: #ffd2d8;
-      background: rgba(255, 93, 115, 0.16);
-      border: 1px solid rgba(255, 93, 115, 0.28);
-    }
-
-    .confidence-bar {
-      width: 100%;
-      height: 12px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .confidence-fill {
-      width: 0;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      transition: width 0.6s ease;
-    }
-
-    .confidence-label {
-      display: flex;
-      justify-content: space-between;
-      color: #d5e4f2;
-      font-size: 0.92rem;
-    }
-
-    .footer-text small {
-      display: block;
-      margin-top: 8px;
-      opacity: 0.9;
-    }
-
-    footer {
-      padding: 28px 0 36px;
-      text-align: center;
-    }
-
-    @media (max-width: 980px) {
-      .hero,
-      .upload-wrapper {
-        grid-template-columns: 1fr;
-      }
-
-      nav ul {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 48px;
-      }
-
-      .scan-box,
-      .scan-box img {
-        min-height: 360px;
-        height: 360px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        width: min(100% - 20px, 1180px);
-      }
-
-      .card,
-      .visual-card {
-        padding: 20px;
-      }
-
-      .prediction {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroScan AI | Brain Tumor Detection</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(20, 184, 166, 0.22), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.18), transparent 35%),
+                #050816;
+            color: #f9fafb;
+            overflow-x: hidden;
+        }
+
+        .background-glow {
+            position: fixed;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(20, 184, 166, 0.18);
+            filter: blur(80px);
+            top: 12%;
+            left: -120px;
+            animation: floatGlow 7s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        .background-glow.two {
+            background: rgba(59, 130, 246, 0.15);
+            top: 55%;
+            left: auto;
+            right: -130px;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes floatGlow {
+            from {
+                transform: translateY(0) scale(1);
+            }
+            to {
+                transform: translateY(-45px) scale(1.12);
+            }
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 22px 8%;
+            background: rgba(5, 8, 22, 0.78);
+            backdrop-filter: blur(16px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            color: #5eead4;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 45px;
+            padding: 75px 8%;
+            align-items: center;
+        }
+
+        .hero-content {
+            animation: fadeLeft 1s ease;
+        }
+
+        @keyframes fadeLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-45px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-content h1 {
+            font-size: 52px;
+            line-height: 1.12;
+            color: #f8fafc;
+            margin-bottom: 22px;
+        }
+
+        .hero-content h1 span {
+            color: #5eead4;
+            text-shadow: 0 0 25px rgba(94, 234, 212, 0.35);
+        }
+
+        .hero-content p {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #cbd5e1;
+            max-width: 640px;
+            margin-bottom: 32px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 10px 16px;
+            background: rgba(20, 184, 166, 0.12);
+            color: #99f6e4;
+            border: 1px solid rgba(94, 234, 212, 0.28);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .badge:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 18px rgba(20, 184, 166, 0.35);
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.78);
+            border-radius: 26px;
+            padding: 36px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            backdrop-filter: blur(18px);
+            animation: fadeRight 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(120deg, transparent, rgba(94, 234, 212, 0.22), transparent);
+            transform: translateX(-100%);
+            animation: shine 4s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%);
+            }
+            55%, 100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes fadeRight {
+            from {
+                opacity: 0;
+                transform: translateX(45px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card h2 {
+            font-size: 27px;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .upload-box {
+            border: 2px dashed rgba(94, 234, 212, 0.45);
+            background: rgba(15, 118, 110, 0.12);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 22px;
+            transition: 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: #5eead4;
+            box-shadow: inset 0 0 25px rgba(20, 184, 166, 0.13);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 13px;
+            background: rgba(2, 6, 23, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #e5e7eb;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0f766e, #14b8a6, #38bdf8);
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 26px rgba(20, 184, 166, 0.28);
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 16px 35px rgba(56, 189, 248, 0.35);
+        }
+
+        .preview-img {
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+            border-radius: 18px;
+            margin-top: 22px;
+            border: 1px solid rgba(148, 163, 184, 0.32);
+            animation: imagePop 0.7s ease;
+        }
+
+        @keyframes imagePop {
+            from {
+                opacity: 0;
+                transform: scale(0.94);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-box {
+            margin-top: 22px;
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(20, 184, 166, 0.12);
+            border: 1px solid rgba(94, 234, 212, 0.35);
+            animation: pulseResult 1.2s ease;
+        }
+
+        @keyframes pulseResult {
+            0% {
+                transform: scale(0.96);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.03);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-title {
+            font-size: 14px;
+            color: #99f6e4;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .result {
+            font-size: 26px;
+            color: #5eead4;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .confidence {
+            margin-top: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .info-section {
+            padding: 10px 8% 65px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .info-card {
+            background: rgba(15, 23, 42, 0.76);
+            padding: 26px;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            transition: 0.3s;
+            animation: fadeUp 1s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(94, 234, 212, 0.45);
+            box-shadow: 0 18px 40px rgba(20, 184, 166, 0.16);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-card h3 {
+            margin-bottom: 10px;
+            color: #f8fafc;
+            font-size: 18px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            background: rgba(2, 6, 23, 0.92);
+            color: #94a3b8;
+            font-size: 13px;
+            border-top: 1px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .footer span {
+            color: #5eead4;
+            font-weight: 800;
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 45px 6%;
+            }
+
+            .hero-content h1 {
+                font-size: 38px;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+                padding: 10px 6% 50px;
+            }
+
+            .navbar {
+                padding: 18px 6%;
+            }
+
+            .nav-text {
+                display: none;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="background-grid"></div>
 
-  <header>
-    <div class="container nav">
-      <div class="brand">
-        <div class="brand-logo">🧠</div>
-        <span>NeuroScan AI</span>
-      </div>
+    <div class="background-glow"></div>
+    <div class="background-glow two"></div>
 
-      <nav>
-        <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#analyze">Analyze</a></li>
-        </ul>
-      </nav>
+    <nav class="navbar">
+        <div class="logo">NeuroScan AI</div>
+        <div class="nav-text">Brain Tumor Detection System</div>
+    </nav>
 
-      <button class="btn btn-primary" onclick="document.getElementById('analyze').scrollIntoView()">Try Demo</button>
-    </div>
-  </header>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI-Powered <span>Brain Tumor</span> Detection</h1>
+            <p>
+                Upload a brain MRI image and get an AI-based tumor classification result.
+                This deep learning system is designed for fast, clean, and professional MRI scan analysis.
+            </p>
 
-  <main>
-    <section id="home">
-      <div class="container hero">
-        <div>
-          <div class="badge">⚡ AI-powered MRI screening interface</div>
-          <h1>Advanced <span>Brain Tumor Detection</span> with Flask + ResNet50</h1>
-          <p>
-            Upload an MRI image, preview the scan, and get a prediction from your trained
-            <strong>brain_tumor_resnet50_final.keras</strong> model through a clean medical-themed interface.
-          </p>
-
-          <div class="hero-actions">
-            <button class="btn btn-primary" onclick="document.getElementById('analyze').scrollIntoView()">Upload MRI Scan</button>
-            <button class="btn btn-outline" onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">Learn More</button>
-          </div>
-
-          <div class="hero-stats">
-            <div class="stat">
-              <h3>ResNet50</h3>
-              <p>Deep learning powered classification</p>
+            <div class="badges">
+                <div class="badge">ResNet50 Model</div>
+                <div class="badge">MRI Analysis</div>
+                <div class="badge">Fast Prediction</div>
+                <div class="badge">Deep Learning</div>
             </div>
-            <div class="stat">
-              <h3>224×224</h3>
-              <p>Standard MRI preprocessing pipeline</p>
-            </div>
-            <div class="stat">
-              <h3>Flask API</h3>
-              <p>Simple backend integration</p>
-            </div>
-          </div>
         </div>
 
-        <div class="hero-visual">
-          <div class="visual-card">
-            <div class="scan-box">
-              <img src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&w=1200&q=80" alt="MRI scan visual">
-              <div class="scan-overlay"></div>
-              <div class="scan-line"></div>
+        <div class="card">
+            <div class="card-content">
+                <h2>Upload MRI Scan</h2>
+                <p>Select a clear MRI image to begin AI analysis.</p>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="upload-box">
+                        <input type="file" name="image" accept="image/*" required>
+                    </div>
+
+                    <button type="submit">Analyze Image</button>
+                </form>
+
+                {% if img_path %}
+                    <img class="preview-img" src="{{ img_path }}" alt="Uploaded MRI Scan">
+                {% endif %}
+
+                {% if result %}
+                    <div class="result-box">
+                        <div class="result-title">Prediction Result</div>
+                        <div class="result">{{ result }}</div>
+                        <div class="confidence">Confidence: {{ confidence|round(2) }}%</div>
+                    </div>
+                {% endif %}
             </div>
-          </div>
         </div>
-      </div>
     </section>
 
-    <section id="analyze">
-      <div class="container">
-        <div class="section-head">
-          <h2>Analyze Brain MRI Scan</h2>
-          <p>Upload an MRI image below and get prediction results from your saved Keras model.</p>
+    <section class="info-section">
+        <div class="info-card">
+            <h3>How It Works</h3>
+            <p>The uploaded MRI image is resized, preprocessed, and passed through a trained deep learning model.</p>
         </div>
 
-        <div class="upload-wrapper">
-          <div class="card upload-panel">
-            <h3>Upload MRI Image</h3>
-            <p>Select a JPG, JPEG, or PNG image to send to the Flask backend for prediction.</p>
-
-            <div class="upload-zone">
-              <div class="upload-icon">📤</div>
-              <h3>Drag & Drop or Browse</h3>
-              <p>Choose an MRI image from your computer.</p>
-              <label for="mriUpload" class="btn btn-primary">Choose MRI Image</label>
-              <input id="mriUpload" class="hidden-input" type="file" accept="image/*">
-              <div class="file-meta" id="fileMeta">No file selected yet.</div>
-            </div>
-
-            <div style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;">
-              <button class="btn btn-primary" id="predictBtn">Run Prediction</button>
-              <button class="btn btn-outline" id="clearBtn">Clear</button>
-            </div>
-          </div>
-
-          <div class="card result-panel">
-            <h3>Scan Preview & Prediction</h3>
-            <p>The result below will update after the backend returns the prediction.</p>
-
-            <div class="preview-box">
-              <img id="previewImage" alt="MRI preview">
-              <div class="preview-placeholder" id="previewPlaceholder">
-                <div style="font-size: 2.3rem; margin-bottom: 10px;">🩻</div>
-                <div>Selected MRI image will appear here</div>
-              </div>
-            </div>
-
-            <div class="result-card">
-              <div class="prediction">
-                <div style="width: 100%;">
-                  <strong id="predictionText">Tumor Status: Waiting for image</strong>
-
-                  <div style="margin-top: 8px; font-size: 0.98rem; color: #dce9f7;">
-                    Tumor Class:
-                    <span id="tumorClassText" style="font-weight: 600;">--</span>
-                  </div>
-
-                  <span style="color: var(--muted); font-size: 0.92rem; display: block; margin-top: 8px;" id="predictionSubtext">
-                    Upload a scan to view analysis result
-                  </span>
-                </div>
-                <span class="pill safe" id="predictionBadge">No Result</span>
-              </div>
-
-              <div>
-                <div class="confidence-label">
-                  <span>Confidence Score</span>
-                  <span id="confidenceValue">0%</span>
-                </div>
-                <div class="confidence-bar">
-                  <div class="confidence-fill" id="confidenceFill"></div>
-                </div>
-              </div>
-            </div>
-
-            <div id="errorBox" style="margin-top:14px; color:#ffd2d8; display:none;"></div>
-          </div>
+        <div class="info-card">
+            <h3>Detected Classes</h3>
+            <p>The system classifies scans as glioma, meningioma, pituitary tumor, or no tumor.</p>
         </div>
-      </div>
+
+        <div class="info-card">
+            <h3>Disclaimer</h3>
+            <p>This project is for educational and demonstration purposes only, not for real medical diagnosis.</p>
+        </div>
     </section>
-  </main>
 
-  <footer>
-    <div class="container footer-text">
-      Brain Tumor Detection Web App using Flask + Keras
-      <small>For educational and project use only. Not a replacement for professional medical diagnosis.</small>
-    </div>
-  </footer>
+    <footer class="footer">
+        Developed by <span>Swagata Sengupta</span> © 2026 | All Rights Reserved
+    </footer>
 
-  <script>
-    const mriUpload = document.getElementById('mriUpload');
-    const previewImage = document.getElementById('previewImage');
-    const previewPlaceholder = document.getElementById('previewPlaceholder');
-    const fileMeta = document.getElementById('fileMeta');
-    const predictBtn = document.getElementById('predictBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const predictionText = document.getElementById('predictionText');
-    const tumorClassText = document.getElementById('tumorClassText');
-    const predictionSubtext = document.getElementById('predictionSubtext');
-    const predictionBadge = document.getElementById('predictionBadge');
-    const confidenceFill = document.getElementById('confidenceFill');
-    const confidenceValue = document.getElementById('confidenceValue');
-    const errorBox = document.getElementById('errorBox');
-
-    mriUpload.addEventListener('change', function () {
-      const file = this.files[0];
-      if (!file) return;
-
-      fileMeta.textContent = `Selected: ${file.name}`;
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        previewImage.src = e.target.result;
-        previewImage.style.display = 'block';
-        previewPlaceholder.style.display = 'none';
-
-        predictionText.textContent = 'Tumor Status: Ready to analyze';
-        tumorClassText.textContent = '--';
-        predictionSubtext.textContent = 'Click Run Prediction to send the image to the Flask backend.';
-        predictionBadge.textContent = 'Pending';
-        predictionBadge.className = 'pill safe';
-        confidenceFill.style.width = '0%';
-        confidenceValue.textContent = '0%';
-        errorBox.style.display = 'none';
-        errorBox.textContent = '';
-      };
-      reader.readAsDataURL(file);
-    });
-
-    predictBtn.addEventListener('click', async function () {
-      const file = mriUpload.files[0];
-
-      if (!file) {
-        alert('Please select an MRI image first.');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      predictionText.textContent = "Tumor Status: Processing...";
-      tumorClassText.textContent = '--';
-      predictionSubtext.textContent = "Please wait while the model analyzes the scan.";
-      predictionBadge.textContent = "Analyzing";
-      predictionBadge.className = "pill safe";
-      confidenceFill.style.width = "0%";
-      confidenceValue.textContent = "0%";
-      errorBox.style.display = 'none';
-      errorBox.textContent = '';
-
-      try {
-        const response = await fetch("/predict", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          errorBox.style.display = 'block';
-          errorBox.textContent = data.error || "Prediction failed.";
-          predictionText.textContent = "Tumor Status: Failed";
-          tumorClassText.textContent = '--';
-          predictionSubtext.textContent = "Please try again with a valid image.";
-          predictionBadge.textContent = "Error";
-          predictionBadge.className = "pill alert";
-          return;
-        }
-
-        const label = data.prediction.toLowerCase().replace(/\s+/g, '');
-
-        const classDisplayMap = {
-          glioma: "Glioma",
-          meningioma: "Meningioma",
-          notumor: "No Tumor",
-          pituitary: "Pituitary"
-        };
-
-        tumorClassText.textContent = classDisplayMap[label] || data.prediction;
-        predictionSubtext.textContent = "Result generated successfully from the trained ResNet50 model.";
-
-        if (label === "notumor") {
-          predictionText.textContent = "Tumor Status: No Tumor";
-          predictionBadge.textContent = "No Tumor";
-          predictionBadge.className = "pill safe";
-        } else {
-          predictionText.textContent = "Tumor Status: Tumor Detected";
-          predictionBadge.textContent = "Tumor";
-          predictionBadge.className = "pill alert";
-        }
-
-        confidenceFill.style.width = `${data.confidence}%`;
-        confidenceValue.textContent = `${data.confidence}%`;
-
-      } catch (error) {
-        errorBox.style.display = 'block';
-        errorBox.textContent = "Error connecting to Flask backend.";
-        predictionText.textContent = "Tumor Status: Failed";
-        tumorClassText.textContent = '--';
-        predictionSubtext.textContent = "Check whether the Flask server is running.";
-        predictionBadge.textContent = "Error";
-        predictionBadge.className = "pill alert";
-      }
-    });
-
-    clearBtn.addEventListener('click', function () {
-      mriUpload.value = '';
-      previewImage.src = '';
-      previewImage.style.display = 'none';
-      previewPlaceholder.style.display = 'block';
-      fileMeta.textContent = 'No file selected yet.';
-      predictionText.textContent = 'Tumor Status: Waiting for image';
-      tumorClassText.textContent = '--';
-      predictionSubtext.textContent = 'Upload a scan to view analysis result';
-      predictionBadge.textContent = 'No Result';
-      predictionBadge.className = 'pill safe';
-      confidenceFill.style.width = '0%';
-      confidenceValue.textContent = '0%';
-      errorBox.style.display = 'none';
-      errorBox.textContent = '';
-    });
-  </script>
 </body>
 </html>
